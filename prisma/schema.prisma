@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Products {
+  id          Int      @id @default(autoincrement())
+  product     String
+  size        String[]
+  price       Decimal  @db.Decimal(10, 2)
+  gender      String
+  brand       String
+  description String
+  quantity    Int
+  total_sold  Int?
+  is_new      Boolean
+  discount    Int?
+
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int
+
+  productVariant ProductVariant[]
+
+  productInventory ProductInventory?
+
+  post Post[]
+
+  coupon Coupon[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([price])
+  @@index([product])
+  @@index([gender])
+  @@index([size])
+  @@index([brand])
+  @@index([is_new])
+}
+
+model ProductVariant {
+  id         Int       @id @default(autoincrement())
+  color      String
+  url        String
+  Products   Products? @relation(fields: [productsId], references: [id], onDelete: Cascade)
+  productsId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([color])
+  @@index([url])
+}
+
+model ProductInventory {
+  id       Int     @id @default(autoincrement())
+  minStock Int
+  stock    Boolean
+
+  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
+  productsId Int      @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([minStock])
+}
+
+model Post {
+  id       Int    @id @default(autoincrement())
+  comments String
+  username String
+  rating   Int
+
+  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
+  productsId Int
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+model Category {
+  id       Int        @id @default(autoincrement())
+  category String     @unique
+  products Products[]
+
+  discountRules DicountRules[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@map("categories")
+}
+
+model Coupon {
+  id         Int      @id @default(autoincrement())
+  discount   Int
+  espiryDate DateTime
+  isGlobal   Boolean
+  isNew      Boolean
+  code       String
+
+  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
+  productsId Int
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+  @@index([isNew])
+  @@index([isGlobal])
+  @@index([espiryDate])
+}
+
+model DicountRules {
+  id Int @id @default(autoincrement())
+
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int
+
+  discount   Int
+  start_date String
+  end_date   String
+  is_active  Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([is_active])
+  @@index([start_date])
+  @@index([end_date])
+  @@index([categoryId])
+  @@map("discount_rules")
+}
