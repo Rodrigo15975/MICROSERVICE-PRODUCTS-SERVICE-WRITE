@@ -23,8 +23,8 @@ export class CategoryService {
    * Creates a new category if it doesn't already exist.
    * @param data - The data for the category to create
    * @returns Success message if created
+   */
 
-  */
   async create(data: CreateCategoryDto) {
     await this.prismaService.category.findUnique({
       where: {
@@ -206,7 +206,7 @@ export class CategoryService {
     const { id: categoryId, start_date } = data
     await this.verifyExistingDiscountWithCategory(categoryId, start_date)
 
-    const [_, categoryWithDiscount] = await this.prismaService.$transaction([
+    const [, categoryWithDiscount] = await this.prismaService.$transaction([
       this.prismaService.dicountRules.create({
         data: {
           ...data,
