@@ -10,5 +10,6 @@ export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
 export class UpdateDiscountRulesCategory extends PartialType(
   CreateDiscountRulesCategory,
 ) {
+  categoryId?: number
   id: number
 }

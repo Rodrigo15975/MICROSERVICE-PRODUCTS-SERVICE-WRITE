@@ -5,18 +5,27 @@ import { PrismaModule } from 'src/prisma/prisma.module'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { proxyName } from './common/proxyName'
 import { CategoryServiceRead } from './read/category.read.service'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 
 @Module({
   imports: [
     PrismaModule,
-    ClientsModule.register([
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    PrismaModule,
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
         name: proxyName.nameRead,
-        transport: Transport.REDIS,
-        options: {
-          host: 'localhost',
-          port: 6379,
-        },
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.REDIS,
+          options: {
+            host: configService.getOrThrow('REDIS_HOST'),
+            port: configService.getOrThrow('REDIS_PORT') || 6379,
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
   ],

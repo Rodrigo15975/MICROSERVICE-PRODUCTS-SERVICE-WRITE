@@ -26,4 +26,4 @@ export type CreateDiscountRulesWithCategoryInDBReadDto =
   }> | null
 
 export type UpdateDiscountRulesWithCategoryInDBReadDto =
-  CreateDiscountRulesCategory
+  Prisma.DicountRulesUpdateInput

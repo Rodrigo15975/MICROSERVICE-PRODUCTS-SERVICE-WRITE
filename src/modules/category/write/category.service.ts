@@ -183,13 +183,19 @@ export class CategoryService {
     id: number,
     data: UpdateDiscountRulesCategory,
   ) {
-    const updatedDiscount = await this.prismaService.dicountRules.update({
-      data,
+    const { discount, start_date } = data
+
+    const discountUpdated = await this.prismaService.dicountRules.update({
       where: {
         id,
       },
+      data: {
+        start_date,
+        discount,
+      },
     })
-    this.categoryServiceRead.updateDiscountWithCategory(updatedDiscount)
+    this.categoryServiceRead.updateDiscountWithCategory(discountUpdated)
+
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
       'Discount updated successfully',
       HttpStatus.ACCEPTED,
