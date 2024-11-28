@@ -5,6 +5,7 @@ import { AppModule } from './app.module'
 
 // Cargar variables de entorno
 import * as dotenv from 'dotenv'
+import { ValidationPipe } from '@nestjs/common'
 dotenv.config()
 
 async function bootstrap() {
@@ -33,6 +34,12 @@ async function bootstrap() {
   })
   await app.startAllMicroservices()
   const port = Number(process.env.PORT) || 4004
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
+
   await app.listen(port, () => {
     console.log('listening on port ' + port)
   })

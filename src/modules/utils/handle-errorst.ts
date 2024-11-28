@@ -16,12 +16,13 @@ export class HandledRpcException {
   static ResponseSuccessfullyMessagePattern(
     message: string,
     statusCode: number,
-    description?: string,
+    service: string,
   ) {
     return {
       message,
       statusCode,
-      description,
+      service,
+      timestamp: new Date().toISOString(),
     }
   }
 }

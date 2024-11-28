@@ -1,3 +1,4 @@
 export const proxyName = {
-  name: 'products-service-write',
+  // write: 'products-service-write',
+  read: 'products-service-read',
 }

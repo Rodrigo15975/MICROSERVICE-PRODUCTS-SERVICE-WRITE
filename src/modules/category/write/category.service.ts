@@ -40,6 +40,7 @@ export class CategoryService {
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
       'Successfully created',
       HttpStatus.CREATED,
+      CategoryService.name,
     )
   }
 
@@ -88,6 +89,7 @@ export class CategoryService {
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
       'Created many categories succesfully (invalid dupliqued)',
       HttpStatus.CREATED,
+      CategoryService.name,
     )
   }
 
@@ -135,6 +137,7 @@ export class CategoryService {
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
       `Updated category ${data.category} successfully`,
       HttpStatus.ACCEPTED,
+      CategoryService.name,
     )
   }
 
@@ -153,6 +156,7 @@ export class CategoryService {
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
       `Deleted category successfully`,
       HttpStatus.ACCEPTED,
+      CategoryService.name,
     )
   }
   /**
@@ -169,6 +173,7 @@ export class CategoryService {
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
       `Deleted  discount with category successfully`,
       HttpStatus.ACCEPTED,
+      CategoryService.name,
     )
   }
 
@@ -183,14 +188,14 @@ export class CategoryService {
     id: number,
     data: UpdateDiscountRulesCategory,
   ) {
-    const { discount, start_date } = data
+    const { discount, end_date } = data
 
     const discountUpdated = await this.prismaService.dicountRules.update({
       where: {
         id,
       },
       data: {
-        start_date,
+        end_date,
         discount,
       },
     })
@@ -199,6 +204,7 @@ export class CategoryService {
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
       'Discount updated successfully',
       HttpStatus.ACCEPTED,
+      CategoryService.name,
     )
   }
 
@@ -233,6 +239,7 @@ export class CategoryService {
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
       'Discount created successfully',
       HttpStatus.CREATED,
+      CategoryService.name,
     )
   }
 
