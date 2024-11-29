@@ -1,7 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { proxyName } from '../common/proxyName'
 import { ClientProxy } from '@nestjs/microservices'
-import { PRODUCTS_CREATE_READ } from '../common/patternRead'
+import {
+  PRODUCTS_CREATE_READ,
+  PRODUCTS_REMOVE_READ,
+} from '../common/patternRead'
 import { CreateProductReadDto } from '../dto/create-product-read-dto'
 
 @Injectable()
@@ -12,19 +15,26 @@ export class ProductsServiceRead {
   ) {}
   create(createProductDto: CreateProductReadDto, index: number) {
     try {
-      console.log(createProductDto, index)
-
       this.clientProductRead.emit(PRODUCTS_CREATE_READ, createProductDto)
-      this.logger.log('Send data product in DB READ: ', index)
-      this.logger.log('DATA:', JSON.stringify(createProductDto))
+      this.logger.log(
+        'Send data for CREATED/UPDATED product in DB READ: ',
+        index,
+      )
     } catch (error) {
-      this.logger.error('Failed to emit  PRODUCTS_CREATE_READ event: ', error)
+      this.logger.error(
+        'Failed to emit CREATED/UPDATED IN DB_READ PRODUCTS_CREATE_READ event: ',
+        error,
+      )
     }
   }
-  // update(id: number, updateProductDto: UpdateProductDto) {
-  //   return `This action updates a #id `
-  // }
-  // remove(id: number) {
-  //   return `This action removes a #id `
-  // }
+  remove(id: number) {
+    try {
+      this.clientProductRead.emit(PRODUCTS_REMOVE_READ, id)
+    } catch (error) {
+      this.logger.error(
+        'Failed to emit in DB_READ  PRODUCTS_REMOVE_READ event: ',
+        error,
+      )
+    }
+  }
 }

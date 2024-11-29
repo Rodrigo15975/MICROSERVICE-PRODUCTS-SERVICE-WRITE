@@ -1,13 +1,8 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common'
-import {
-  CreateProductDto,
-  ProductDto,
-  // ProductVariantDto,
-} from '../dto/create-product.dto'
-import { UpdateProductDto } from '../dto/update-product.dto'
-import { PrismaService } from 'src/prisma/prisma.service'
 import * as Bluebird from 'bluebird'
 import { HandledRpcException } from 'src/modules/utils/handle-errorst'
+import { PrismaService } from 'src/prisma/prisma.service'
+import { CreateProductDto, ProductDto } from '../dto/create-product.dto'
 import { ProductsServiceRead } from '../read/product.service'
 
 @Injectable()
@@ -20,6 +15,9 @@ export class ProductsService {
 
   async create(data: CreateProductDto) {
     const { products } = data
+    console.log(products)
+
+    // return { messagE: 'ready here ' }
     await Bluebird.map(
       products,
       async (dataProducts, index) => {
@@ -34,52 +32,40 @@ export class ProductsService {
       },
     )
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
-      'Product creating successfully',
+      'Product creating successfully / Product updated successfully',
       HttpStatus.CREATED,
       ProductsService.name,
     )
   }
 
-  // private async verifyExistingProduct(product: string) {
-  //   const findProduct = await this.prismaService.products.findUnique({
-  //     where: {
-  //       product,
-  //     },
-  //   })
-  //   if (findProduct)
-  //     throw HandledRpcException.rpcException(
-  //       `Product ${product} existing, can you update`,
-  //       HttpStatus.CONFLICT,
-  //     )
-  // }
   private async createProducts(dataProduct: ProductDto) {
     const {
       product,
       brand,
-      category,
+      // category,
       description,
       discount,
       gender,
       is_new,
       price,
       quantity,
-      size,
-      productInventory,
+      // size,
+      // productInventory,
       productVariant,
     } = dataProduct
-    const { minStock, stock } = productInventory
+    // const { minStock, stock } = productInventory
     return await this.prismaService.products.upsert({
       create: {
         brand,
         category: {
           connect: {
-            category,
+            category: 'ADIDAS',
           },
         },
         productInventory: {
           create: {
-            minStock,
-            stock,
+            minStock: 2,
+            stock: false,
           },
         },
         productVariant: {
@@ -95,20 +81,20 @@ export class ProductsService {
         price,
         product,
         quantity,
-        size,
+        size: ['M', 'F'],
       },
       update: {
         price,
         quantity,
         productInventory: {
           update: {
-            minStock,
-            stock,
+            minStock: 3,
+            stock: false,
           },
         },
         category: {
           connect: {
-            category,
+            category: 'ADIDAS',
           },
         },
         brand,
@@ -117,7 +103,7 @@ export class ProductsService {
         is_new,
         discount,
         product,
-        size,
+        size: ['M', 'F'],
       },
       include: {
         category: true,
@@ -130,12 +116,23 @@ export class ProductsService {
     })
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    console.log({ updateProductDto })
-    return `This action updates a #${id} product`
-  }
+  /**
+   *
+   * @param id
+   *
+   */
+  async remove(id: number) {
+    await this.prismaService.products.delete({
+      where: {
+        id,
+      },
+    })
 
-  remove(id: number) {
-    return `This action removes a #${id} product`
+    this.productServiceRead.remove(id)
+    return HandledRpcException.ResponseSuccessfullyMessagePattern(
+      'Product deleted successfully',
+      HttpStatus.OK,
+      ProductsService.name,
+    )
   }
 }

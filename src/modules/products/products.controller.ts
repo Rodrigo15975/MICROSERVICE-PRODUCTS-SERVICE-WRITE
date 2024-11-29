@@ -1,9 +1,8 @@
 import { Controller } from '@nestjs/common'
 import { MessagePattern, Payload } from '@nestjs/microservices'
-import { UpdateProductDto } from './dto/update-product.dto'
-import { PRODUCTS_CREATE } from './common/patternWrite'
-import { ProductsService } from './write/products.service'
+import { PRODUCTS_CREATE, PRODUCTS_REMOVE } from './common/patternWrite'
 import { CreateProductDto } from './dto/create-product.dto'
+import { ProductsService } from './write/products.service'
 @Controller()
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -13,12 +12,7 @@ export class ProductsController {
     return this.productsService.create(createProductDto)
   }
 
-  @MessagePattern('updateProduct')
-  update(@Payload() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(updateProductDto.id, updateProductDto)
-  }
-
-  @MessagePattern('removeProduct')
+  @MessagePattern(PRODUCTS_REMOVE)
   remove(@Payload() id: number) {
     return this.productsService.remove(id)
   }
