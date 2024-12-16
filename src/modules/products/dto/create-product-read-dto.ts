@@ -7,3 +7,9 @@ export type CreateProductReadDto = Prisma.ProductsGetPayload<{
     category: true
   }
 }>
+
+export type CreateOneVariantRead = Prisma.ProductVariantGetPayload<{
+  include: {
+    Products: false
+  }
+}>

@@ -1,15 +1,17 @@
+import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
-import { ProductsController } from './products.controller'
-import { PrismaModule } from 'src/prisma/prisma.module'
-import { ProductsService } from './write/products.service'
-import { ProductsServiceRead } from './read/product.service'
-import { ClientsModule, Transport } from '@nestjs/microservices'
 import { ConfigService } from '@nestjs/config'
+import { ClientsModule, Transport } from '@nestjs/microservices'
+import { PrismaModule } from 'src/prisma/prisma.module'
 import { proxyName } from './common/proxyName'
+import { ProductsController } from './products.controller'
+import { ProductsServiceRead } from './read/product.service'
+import { ProductsService } from './write/products.service'
 
 @Module({
   imports: [
     PrismaModule,
+    HttpModule,
     ClientsModule.registerAsync([
       {
         name: proxyName.read,
@@ -22,6 +24,7 @@ import { proxyName } from './common/proxyName'
             define: {
               timestamps: true,
             },
+            retryDelay: 1000,
             log: ['query', 'error'],
             // keyPrefix: 'products:',
             // ignoreEnvVariables: true,

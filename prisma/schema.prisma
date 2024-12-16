@@ -8,31 +8,25 @@ datasource db {
 }
 
 model Products {
-  id          Int      @id @default(autoincrement())
-  product     String   @unique
-  size        String[]
-  price       Decimal  @db.Decimal(10, 2)
-  gender      String
-  brand       String
-  description String
-  quantity    Int
-  total_sold  Int?
-  is_new      Boolean
-  discount    Int?
-
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId Int
-
-  productVariant ProductVariant[]
-
+  id               Int               @id @default(autoincrement())
+  product          String            @unique
+  size             String[]
+  price            Decimal           @db.Decimal(10, 2)
+  gender           String
+  brand            String
+  description      String
+  quantity         Int
+  total_sold       Int?
+  is_new           Boolean
+  discount         Int?
+  categoryId       Int
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  coupon           Coupon[]
+  post             Post[]
   productInventory ProductInventory?
-
-  post Post[]
-
-  coupon Coupon[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  productVariant   ProductVariant[]
+  category         Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@index([categoryId])
   @@index([price])
@@ -44,57 +38,52 @@ model Products {
 }
 
 model ProductVariant {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   color      String
   url        String
-  Products   Products? @relation(fields: [productsId], references: [id], onDelete: Cascade)
   productsId Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  key_url    String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
 
   @@index([color])
   @@index([url])
+  @@index([key_url])
 }
 
 model ProductInventory {
-  id       Int     @id @default(autoincrement())
-  minStock Int
-  stock    Boolean
-
-  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
+  minStock   Int
+  stock      Boolean
   productsId Int      @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
 
   @@index([minStock])
 }
 
 model Post {
-  id       Int    @id @default(autoincrement())
-  comments String
-  username String
-  rating   Int
-
-  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
+  comments   String
+  username   String
+  rating     Int
   productsId Int
-
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updateAt   DateTime @updatedAt
+  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
 
   @@index([username])
 }
 
 model Category {
-  id       Int        @id @default(autoincrement())
-  category String     @unique
-  products Products[]
-
+  id            Int            @id @default(autoincrement())
+  category      String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  products      Products[]
   discountRules DicountRules[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([category])
   @@map("categories")
@@ -107,12 +96,10 @@ model Coupon {
   isGlobal   Boolean
   isNew      Boolean
   code       String
-
-  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
   productsId Int
-
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  createAt   DateTime @default(now())
+  updateAt   DateTime @updatedAt
+  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
 
   @@index([isNew])
   @@index([isGlobal])
@@ -120,18 +107,15 @@ model Coupon {
 }
 
 model DicountRules {
-  id Int @id @default(autoincrement())
-
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
   categoryId Int
-
   discount   Int
   start_date String
   end_date   String
   is_active  Boolean
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@index([is_active])
   @@index([start_date])

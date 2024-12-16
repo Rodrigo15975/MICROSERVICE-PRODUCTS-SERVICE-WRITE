@@ -2,10 +2,15 @@ import { Inject, Injectable, Logger } from '@nestjs/common'
 import { proxyName } from '../common/proxyName'
 import { ClientProxy } from '@nestjs/microservices'
 import {
+  PRODUCTS_CREATE_ONE_VARIANT_READ,
   PRODUCTS_CREATE_READ,
   PRODUCTS_REMOVE_READ,
+  PRODUCTS_REMOVE_URL_READ,
 } from '../common/patternRead'
-import { CreateProductReadDto } from '../dto/create-product-read-dto'
+import {
+  CreateOneVariantRead,
+  CreateProductReadDto,
+} from '../dto/create-product-read-dto'
 
 @Injectable()
 export class ProductsServiceRead {
@@ -27,12 +32,32 @@ export class ProductsServiceRead {
       )
     }
   }
+  createOneVariant(data: CreateOneVariantRead) {
+    try {
+      this.clientProductRead.emit(PRODUCTS_CREATE_ONE_VARIANT_READ, data)
+    } catch (error) {
+      this.logger.error(
+        'Failed to emit in DB_READ  PRODUCTS_CREATE_ONE_VARIANT_READ event: ',
+        error,
+      )
+    }
+  }
   remove(id: number) {
     try {
       this.clientProductRead.emit(PRODUCTS_REMOVE_READ, id)
     } catch (error) {
       this.logger.error(
         'Failed to emit in DB_READ  PRODUCTS_REMOVE_READ event: ',
+        error,
+      )
+    }
+  }
+  removeUrl(key_url: string) {
+    try {
+      this.clientProductRead.emit(PRODUCTS_REMOVE_URL_READ, key_url)
+    } catch (error) {
+      this.logger.error(
+        'Failed to emit in DB_READ  PRODUCTS_REMOVE_URLS_READ event: ',
         error,
       )
     }

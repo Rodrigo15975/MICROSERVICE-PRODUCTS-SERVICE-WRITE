@@ -6,6 +6,7 @@ export class ProductVariantDto {
   color: string
   image: null
   url: string
+  key_url: string
 }
 
 export class ProductInventoryDto {
@@ -26,4 +27,8 @@ export class ProductDto {
   category: string
   discount: number
   productInventory: ProductInventoryDto
+}
+
+export class CreateOneVariant extends ProductVariantDto {
+  id: number
 }
