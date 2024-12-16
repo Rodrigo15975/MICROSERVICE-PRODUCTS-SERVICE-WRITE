@@ -7,3 +7,15 @@ export type CreateProductReadDto = Prisma.ProductsGetPayload<{
     category: true
   }
 }>
+
+export type UpdateOneProductRead = Prisma.ProductsGetPayload<{
+  include: {
+    category: false
+  }
+}>
+
+export type CreateOneVariantRead = Prisma.ProductVariantGetPayload<{
+  include: {
+    Products: false
+  }
+}>
