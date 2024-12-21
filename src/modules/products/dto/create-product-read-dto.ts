@@ -10,6 +10,12 @@ export type CreateProductReadDto = Prisma.ProductsGetPayload<{
 
 export type UpdateOneProductRead = Prisma.ProductsGetPayload<{
   include: {
+    category: true
+    productInventory: true
+  }
+}>
+export type UpdateOneProductSizeRead = Prisma.ProductsGetPayload<{
+  include: {
     category: false
   }
 }>

@@ -1,9 +1,8 @@
 import { Controller } from '@nestjs/common'
 import { MessagePattern, Payload } from '@nestjs/microservices'
+import { COUPON_CREATE, COUPON_REMOVE } from './common/patterNameWrite'
 import { CouponService } from './coupon.service'
 import { CreateCouponDto } from './dto/create-coupon.dto'
-import { UpdateCouponDto } from './dto/update-coupon.dto'
-import { COUPON_CREATE } from './common/patterNameWrite'
 
 @Controller()
 export class CouponController {
@@ -11,25 +10,10 @@ export class CouponController {
 
   @MessagePattern(COUPON_CREATE)
   create(@Payload() createCouponDto: CreateCouponDto) {
-    return this.couponService.create(createCouponDto)
+    return this.couponService.createOrUpdate(createCouponDto)
   }
 
-  @MessagePattern('findAllCoupon')
-  findAll() {
-    return this.couponService.findAll()
-  }
-
-  @MessagePattern('findOneCoupon')
-  findOne(@Payload() id: number) {
-    return this.couponService.findOne(id)
-  }
-
-  @MessagePattern('updateCoupon')
-  update(@Payload() updateCouponDto: UpdateCouponDto) {
-    return this.couponService.update(updateCouponDto.id, updateCouponDto)
-  }
-
-  @MessagePattern('removeCoupon')
+  @MessagePattern(COUPON_REMOVE)
   remove(@Payload() id: number) {
     return this.couponService.remove(id)
   }

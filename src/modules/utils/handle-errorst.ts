@@ -2,10 +2,15 @@ import { HttpStatus } from '@nestjs/common'
 import { RpcException } from '@nestjs/microservices'
 
 export class HandledRpcException {
-  static rpcException(message: string, statusCode: HttpStatus) {
+  static rpcException(
+    message: string,
+    statusCode: HttpStatus,
+    service?: string,
+  ) {
     throw new RpcException({
       message,
       statusCode,
+      service,
     })
   }
 

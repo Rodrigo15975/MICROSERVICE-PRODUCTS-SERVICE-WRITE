@@ -7,9 +7,11 @@ import {
   PRODUCTS_REMOVE,
   PRODUCTS_REMOVE_SIZE,
   PRODUCTS_REMOVE_URL,
+  PRODUCTS_UPDATE,
 } from './common/patternWrite'
 import { CreateOneVariant, CreateProductDto } from './dto/create-product.dto'
 import { ProductsService } from './write/products.service'
+import { UpdateProductDto } from './dto/update-product.dto'
 @Controller()
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -28,6 +30,11 @@ export class ProductsController {
   @MessagePattern(PRODUCTS_CREATE_SIZE)
   createSize(@Payload() data: { id: number; size: string[] }) {
     return this.productsService.createSize(data.id, data.size)
+  }
+
+  @MessagePattern(PRODUCTS_UPDATE)
+  update(@Payload() data: { id: number; updateProductDto: UpdateProductDto }) {
+    return this.productsService.update(data.id, data)
   }
 
   @MessagePattern(PRODUCTS_REMOVE)

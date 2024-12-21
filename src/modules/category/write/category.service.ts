@@ -98,9 +98,12 @@ export class CategoryService {
    * @param category - The category name to check
    */
   private async verifyCategoryExisting(data: string | undefined) {
-    const category = await this.prismaService.category.findUnique({
+    const category = await this.prismaService.category.findFirst({
       where: {
-        category: data,
+        category: {
+          equals: data,
+          mode: 'insensitive',
+        },
       },
     })
     if (category)

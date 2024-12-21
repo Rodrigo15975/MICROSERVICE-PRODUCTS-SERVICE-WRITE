@@ -12,6 +12,7 @@ import {
   CreateOneVariantRead,
   CreateProductReadDto,
   UpdateOneProductRead,
+  UpdateOneProductSizeRead,
 } from '../dto/create-product-read-dto'
 
 @Injectable()
@@ -21,7 +22,10 @@ export class ProductsServiceRead {
     @Inject(proxyName.read) private readonly clientProductRead: ClientProxy,
   ) {}
   createOrUpdate(
-    createProductDto: CreateProductReadDto | UpdateOneProductRead,
+    createProductDto:
+      | CreateProductReadDto
+      | UpdateOneProductRead
+      | UpdateOneProductSizeRead,
     index: number = 1,
   ) {
     try {
@@ -35,6 +39,7 @@ export class ProductsServiceRead {
         'Failed to emit CREATED/UPDATED IN DB_READ PRODUCTS_CREATE_READ event: ',
         error,
       )
+      throw new Error(error)
     }
   }
   createOneVariant(data: CreateOneVariantRead) {
@@ -45,6 +50,7 @@ export class ProductsServiceRead {
         'Failed to emit in DB_READ  PRODUCTS_CREATE_ONE_VARIANT_READ event: ',
         error,
       )
+      throw new Error(error)
     }
   }
   remove(id: number) {
@@ -55,6 +61,7 @@ export class ProductsServiceRead {
         'Failed to emit in DB_READ  PRODUCTS_REMOVE_READ event: ',
         error,
       )
+      throw new Error(error)
     }
   }
   removeUrl(key_url: string) {
@@ -65,10 +72,11 @@ export class ProductsServiceRead {
         'Failed to emit in DB_READ  PRODUCTS_REMOVE_URLS_READ event: ',
         error,
       )
+      throw new Error(error)
     }
   }
 
-  removeOneSize(data: UpdateOneProductRead) {
+  removeOneSize(data: UpdateOneProductSizeRead) {
     try {
       this.clientProductRead.emit(PRODUCTS_REMOVE_SIZE_READ, data)
     } catch (error) {
@@ -76,6 +84,7 @@ export class ProductsServiceRead {
         'Failed to emit in DB_READ  PRODUCTS_REMOVE_SIZE_READ event: ',
         error,
       )
+      throw new Error(error)
     }
   }
 }

@@ -13,7 +13,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    PrismaModule,
     ClientsModule.registerAsync([
       {
         imports: [ConfigModule],

@@ -1,1 +1,12 @@
-export class CreateCouponDto {}
+import { Prisma } from '@prisma/client'
+
+export class CreateCouponDto
+  implements Omit<Prisma.CouponCreateInput, 'products'>
+{
+  discount: number
+  espiryDate: string | Date
+  isGlobal: boolean
+  isNew: boolean
+  code: string
+  product: string
+}

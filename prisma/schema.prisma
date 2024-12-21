@@ -95,7 +95,7 @@ model Coupon {
   espiryDate DateTime
   isGlobal   Boolean
   isNew      Boolean
-  code       String
+  code       String   @unique
   productsId Int
   createAt   DateTime @default(now())
   updateAt   DateTime @updatedAt

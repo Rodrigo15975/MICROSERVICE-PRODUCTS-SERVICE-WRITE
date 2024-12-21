@@ -11,6 +11,8 @@ import {
   ProductDto,
 } from '../dto/create-product.dto'
 import { ProductsServiceRead } from '../read/product.service'
+import { UpdateProductDto } from '../dto/update-product.dto'
+import { normalizeString } from 'src/modules/utils/normalizeString'
 
 @Injectable()
 export class ProductsService {
@@ -187,6 +189,75 @@ export class ProductsService {
       this.logger.error('Error creating Size of PRODUCT IN DB-WRITE', error)
       throw HandledRpcException.rpcException(error.message, error.status)
     }
+  }
+  async update(id: number, data: UpdateProductDto) {
+    const {
+      product,
+      brand,
+      category,
+      description,
+      discount,
+      gender,
+      minStock,
+      price,
+      quantity,
+    } = data
+    const findProduct = await this.prismaService.products.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (normalizeString(findProduct?.product) !== normalizeString(product)) {
+      const verifyProduct = await this.prismaService.products.findFirst({
+        where: {
+          product: {
+            equals: product,
+            mode: 'insensitive',
+          },
+        },
+      })
+      if (verifyProduct) {
+        throw HandledRpcException.rpcException(
+          `Already existing product ${product}`,
+          HttpStatus.CONFLICT,
+        )
+      }
+    }
+    const updateProduct = await this.prismaService.products.update({
+      data: {
+        product,
+        brand,
+        category: {
+          connect: {
+            category,
+          },
+        },
+        description,
+        discount,
+        gender,
+        productInventory: {
+          update: {
+            minStock,
+          },
+        },
+        price,
+        quantity,
+      },
+      include: {
+        category: true,
+        productInventory: true,
+      },
+      where: {
+        id,
+      },
+    })
+    this.productServiceRead.createOrUpdate(updateProduct)
+    return HandledRpcException.ResponseSuccessfullyMessagePattern(
+      'Product updated successfully',
+      HttpStatus.OK,
+      ProductsService.name,
+    )
   }
 
   private async deleteUrl(key: string) {
