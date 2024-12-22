@@ -96,12 +96,14 @@ model Coupon {
   isGlobal   Boolean
   isNew      Boolean
   code       String   @unique
-  productsId Int
   createAt   DateTime @default(now())
   updateAt   DateTime @updatedAt
-  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
+
+  productsId Int?
+  products   Products? @relation(fields: [productsId], references: [id], onDelete: Cascade)
 
   @@index([isNew])
+  @@index([code])
   @@index([isGlobal])
   @@index([espiryDate])
 }

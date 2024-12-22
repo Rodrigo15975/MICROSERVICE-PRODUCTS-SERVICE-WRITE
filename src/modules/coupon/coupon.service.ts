@@ -24,11 +24,7 @@ export class CouponService {
           espiryDate,
           isGlobal,
           isNew,
-          products: {
-            connect: {
-              id: Number(product),
-            },
-          },
+          products: product ? { connect: { id: Number(product) } } : undefined,
         },
         update: {
           code,
@@ -36,11 +32,7 @@ export class CouponService {
           espiryDate,
           isGlobal,
           isNew,
-          products: {
-            connect: {
-              id: Number(product),
-            },
-          },
+          products: product ? { connect: { id: Number(product) } } : undefined,
         },
         where: {
           code,

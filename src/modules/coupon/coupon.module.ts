@@ -22,6 +22,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
           options: {
             host: configService.getOrThrow('REDIS_HOST'),
             port: configService.getOrThrow('REDIS_PORT') || 6379,
+            retryAttempts: 10, // Número de intentos de reconexión
+            retryDelay: 3000, // Milisegundos entre intentos
+            autoResubscribe: true,
+            reconnectOnError: (err: Error) => {
+              // Lógica personalizada para reconectar en ciertos casos
+              const targetError = 'READONLY'
+              console.log(err)
+
+              if (err.message.includes(targetError)) {
+                return true // Reintentar reconexión si el error coincide
+              }
+              return false
+            },
           },
         }),
         inject: [ConfigService],
