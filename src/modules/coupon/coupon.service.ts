@@ -63,6 +63,8 @@ export class CouponService {
 
   async remove(id: number) {
     try {
+      console.log({ id })
+
       await this.prismaService.coupon.delete({
         where: {
           id,
