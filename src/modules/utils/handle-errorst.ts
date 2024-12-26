@@ -22,12 +22,14 @@ export class HandledRpcException {
     message: string,
     statusCode: number,
     service: string,
+    id?: number,
   ) {
     return {
       message,
       statusCode,
       service,
       timestamp: new Date().toISOString(),
+      id,
     }
   }
 }

@@ -160,6 +160,7 @@ export class CategoryService {
       `Deleted category successfully`,
       HttpStatus.ACCEPTED,
       CategoryService.name,
+      id,
     )
   }
   /**
