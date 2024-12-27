@@ -8,5 +8,5 @@ export class CreateCouponDto
   isGlobal: boolean
   isNew: boolean
   code: string
-  product: string
+  product: string | number | undefined | null
 }

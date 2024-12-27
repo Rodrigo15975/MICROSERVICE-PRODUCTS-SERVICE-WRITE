@@ -17,6 +17,10 @@ export class CouponService {
     try {
       const { code, discount, isGlobal, isNew, product } = createCouponDto
       const espiryDate = convertedDateISO(createCouponDto.espiryDate)
+      console.log({
+        createCouponDto,
+      })
+
       const coupon = await this.prismaService.coupon.upsert({
         create: {
           code,
@@ -32,7 +36,11 @@ export class CouponService {
           espiryDate,
           isGlobal,
           isNew,
-          products: product ? { connect: { id: Number(product) } } : undefined,
+          products: product
+            ? { connect: { id: Number(product) } }
+            : {
+                disconnect: true,
+              },
         },
         where: {
           code,
