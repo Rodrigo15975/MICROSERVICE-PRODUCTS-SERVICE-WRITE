@@ -320,6 +320,7 @@ export class ProductsService {
         'Product deleted successfully',
         HttpStatus.OK,
         ProductsService.name,
+        id,
       )
     } catch (error) {
       this.logger.log('Error get product by ID in DB-WRITE', error)
@@ -378,6 +379,7 @@ export class ProductsService {
         'Size Delete successfully',
         HttpStatus.OK,
         ProductsService.name,
+        id,
       )
     } catch (error) {
       this.logger.log('Error get product by ID in DB-WRITE', error)

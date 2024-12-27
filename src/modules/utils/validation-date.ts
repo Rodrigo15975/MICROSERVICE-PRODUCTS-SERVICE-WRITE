@@ -15,3 +15,8 @@ export function isDuplicateStartDate(
 
   return false // Devuelve false si no encuentra duplicados
 }
+
+export function convertedDateISO(date: string): string {
+  const parsedStartDate = parseISO(date).toISOString()
+  return parsedStartDate
+}

@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service'
 import { HandledRpcException } from '../utils/handle-errorst'
 import { CreateCouponDto } from './dto/create-coupon.dto'
 import { CouponReadService } from './read/coupon.read.service'
+import { convertedDateISO } from '../utils/validation-date'
 
 @Injectable()
 export class CouponService {
@@ -14,9 +15,8 @@ export class CouponService {
 
   async createOrUpdate(createCouponDto: CreateCouponDto) {
     try {
-      const { code, discount, espiryDate, isGlobal, isNew, product } =
-        createCouponDto
-
+      const { code, discount, isGlobal, isNew, product } = createCouponDto
+      const espiryDate = convertedDateISO(createCouponDto.espiryDate)
       const coupon = await this.prismaService.coupon.upsert({
         create: {
           code,

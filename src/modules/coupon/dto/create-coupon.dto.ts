@@ -4,7 +4,7 @@ export class CreateCouponDto
   implements Omit<Prisma.CouponCreateInput, 'products'>
 {
   discount: number
-  espiryDate: string | Date
+  espiryDate: string
   isGlobal: boolean
   isNew: boolean
   code: string
