@@ -9,4 +9,5 @@ export class CreateCouponDto
   isNew: boolean
   code: string
   product: string | number | undefined | null
+  isExpiredDate?: boolean
 }

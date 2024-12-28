@@ -15,12 +15,10 @@ export class CouponService {
 
   async createOrUpdate(createCouponDto: CreateCouponDto) {
     try {
-      const { code, discount, isGlobal, isNew, product } = createCouponDto
+      const { code, discount, isGlobal, isNew, product, isExpiredDate } =
+        createCouponDto
       const espiryDate = convertedDateISO(createCouponDto.espiryDate)
-      console.log({
-        createCouponDto,
-      })
-
+      const couponIsExpired = isExpiredDate ? false : true
       const coupon = await this.prismaService.coupon.upsert({
         create: {
           code,
@@ -35,7 +33,7 @@ export class CouponService {
           discount,
           espiryDate,
           isGlobal,
-          isNew,
+          isNew: couponIsExpired,
           products: product
             ? { connect: { id: Number(product) } }
             : {
@@ -54,6 +52,7 @@ export class CouponService {
           },
         },
       })
+
       this.couponServiceRead.createOrUpdate(coupon)
       return HandledRpcException.ResponseSuccessfullyMessagePattern(
         'Coupon created successfully/Coupon updated successfully',
