@@ -192,7 +192,7 @@ export class CategoryService {
     id: number,
     data: UpdateDiscountRulesCategory,
   ) {
-    const { discount, end_date } = data
+    const { discount, end_date, is_active } = data
 
     const discountUpdated = await this.prismaService.dicountRules.update({
       where: {
@@ -201,6 +201,7 @@ export class CategoryService {
       data: {
         end_date,
         discount,
+        is_active,
       },
     })
     this.categoryServiceRead.updateDiscountWithCategory(discountUpdated)
