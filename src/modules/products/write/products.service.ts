@@ -166,8 +166,6 @@ export class ProductsService {
 
   async createSize(id: number, newSizes: string[]) {
     try {
-      console.log({ newSizes })
-
       const findProduct = await this.findOneProduct(id)
       const updatedSizes = [...(findProduct?.size ?? []), ...newSizes]
 
