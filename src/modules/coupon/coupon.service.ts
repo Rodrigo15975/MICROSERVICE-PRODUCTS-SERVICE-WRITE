@@ -4,6 +4,7 @@ import { HandledRpcException } from '../utils/handle-errorst'
 import { CreateCouponDto } from './dto/create-coupon.dto'
 import { CouponReadService } from './read/coupon.read.service'
 import { convertedDateISO } from '../utils/validation-date'
+import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq'
 
 @Injectable()
 export class CouponService {
@@ -12,6 +13,16 @@ export class CouponService {
     private readonly prismaService: PrismaService,
     private readonly couponServiceRead: CouponReadService,
   ) {}
+
+  @RabbitSubscribe({
+    exchange: 'cupon',
+    routingKey: 'cupon',
+  })
+  createCuoponIfClientNotExist(data: any) {
+    console.log({
+      data,
+    })
+  }
 
   async createOrUpdate(createCouponDto: CreateCouponDto) {
     try {

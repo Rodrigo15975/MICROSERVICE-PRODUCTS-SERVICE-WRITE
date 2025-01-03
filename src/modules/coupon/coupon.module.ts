@@ -6,12 +6,26 @@ import { CouponReadService } from './read/coupon.read.service'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { proxyName } from './common/proxyNameRead'
 import { ConfigModule, ConfigService } from '@nestjs/config'
-
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq'
 @Module({
   imports: [
     PrismaModule,
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    RabbitMQModule.forRoot(RabbitMQModule, {
+      uri: 'amqp://guest:guest@localhost:5672',
+      exchanges: [
+        {
+          name: 'cupon',
+          type: 'direct',
+        },
+      ],
+
+      connectionInitOptions: {
+        wait: false,
+        timeout: 30000,
+      },
     }),
     ClientsModule.registerAsync([
       {
