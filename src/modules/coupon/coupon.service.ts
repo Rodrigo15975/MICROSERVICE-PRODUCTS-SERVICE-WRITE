@@ -5,6 +5,7 @@ import { CreateCouponDto } from './dto/create-coupon.dto'
 import { CouponReadService } from './read/coupon.read.service'
 import { convertedDateISO } from '../utils/validation-date'
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq'
+import { configPublish } from './common/configRabbitMQ'
 
 @Injectable()
 export class CouponService {
@@ -15,12 +16,14 @@ export class CouponService {
   ) {}
 
   @RabbitSubscribe({
-    exchange: 'cupon',
-    routingKey: 'cupon',
+    exchange: configPublish.ROUTING_EXCHANGE_CREATE_COUPON_WRITE,
+    routingKey: configPublish.ROUTING_ROUTINGKEY_CREATE_COUPON_WRITE,
+    queue: configPublish.QUEUE_CREATE_COUPON,
   })
-  createCuoponIfClientNotExist(data: any) {
+  createCuoponIfClientNotExist(idUserGoogle: string) {
     console.log({
-      data,
+      idUserGoogle,
+      message: 'recieved',
     })
   }
 

@@ -1,31 +1,31 @@
-import { Module } from '@nestjs/common'
-import { CouponService } from './coupon.service'
-import { CouponController } from './coupon.controller'
-import { PrismaModule } from 'src/prisma/prisma.module'
-import { CouponReadService } from './read/coupon.read.service'
-import { ClientsModule, Transport } from '@nestjs/microservices'
-import { proxyName } from './common/proxyNameRead'
-import { ConfigModule, ConfigService } from '@nestjs/config'
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq'
+import { Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ClientsModule, Transport } from '@nestjs/microservices'
+import { PrismaModule } from 'src/prisma/prisma.module'
+import { proxyName } from './common/proxyNameRead'
+import { CouponController } from './coupon.controller'
+import { CouponService } from './coupon.service'
+import { CouponReadService } from './read/coupon.read.service'
+import { configExchange, configQueue } from './common/configRabbitMQ'
 @Module({
   imports: [
     PrismaModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
-    RabbitMQModule.forRoot(RabbitMQModule, {
-      uri: 'amqp://guest:guest@localhost:5672',
-      exchanges: [
-        {
-          name: 'cupon',
-          type: 'direct',
-        },
-      ],
+    RabbitMQModule.forRootAsync(RabbitMQModule, {
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.getOrThrow('RABBITMQ_URL'),
+        exchanges: configExchange,
+        queues: configQueue,
 
-      connectionInitOptions: {
-        wait: false,
-        timeout: 30000,
-      },
+        connectionInitOptions: {
+          wait: false,
+        },
+      }),
+      inject: [ConfigService],
     }),
     ClientsModule.registerAsync([
       {
