@@ -15,6 +15,7 @@ export class CouponService {
     private readonly couponServiceRead: CouponReadService,
   ) {}
 
+  // esto ya no va
   @RabbitSubscribe({
     exchange: configPublish.ROUTING_EXCHANGE_CREATE_COUPON_WRITE,
     routingKey: configPublish.ROUTING_ROUTINGKEY_CREATE_COUPON_WRITE,
