@@ -1,4 +1,3 @@
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { ClientsModule, Transport } from '@nestjs/microservices'
@@ -7,7 +6,6 @@ import { proxyName } from './common/proxyNameRead'
 import { CouponController } from './coupon.controller'
 import { CouponService } from './coupon.service'
 import { CouponReadService } from './read/coupon.read.service'
-import { configExchange, configQueue } from './common/configRabbitMQ'
 @Module({
   imports: [
     PrismaModule,
@@ -15,18 +13,7 @@ import { configExchange, configQueue } from './common/configRabbitMQ'
       isGlobal: true,
       envFilePath: '.env',
     }),
-    RabbitMQModule.forRootAsync(RabbitMQModule, {
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.getOrThrow('RABBITMQ_URL'),
-        exchanges: configExchange,
-        queues: configQueue,
 
-        connectionInitOptions: {
-          wait: false,
-        },
-      }),
-      inject: [ConfigService],
-    }),
     ClientsModule.registerAsync([
       {
         imports: [ConfigModule],
