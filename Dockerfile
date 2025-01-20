@@ -3,7 +3,7 @@ FROM node:20-alpine3.20
 WORKDIR /app
 
 COPY package*.json ./
-
+# cambiar todo esto
 RUN npm i
 
 COPY prisma prisma
