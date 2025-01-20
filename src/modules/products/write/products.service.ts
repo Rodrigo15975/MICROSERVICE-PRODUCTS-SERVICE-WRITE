@@ -24,9 +24,10 @@ export class ProductsService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.apiUrlMicroservicesFiles = this.configService.getOrThrow(
-      'API_MICROSERVICES_FILES',
-    )
+    this.apiUrlMicroservicesFiles =
+      process.env.NODE_ENV === 'production'
+        ? this.configService.getOrThrow('API_MICROSERVICES_FILES_PRODUCTION')
+        : this.configService.getOrThrow('API_MICROSERVICES_FILES_DEV')
   }
 
   async create(data: CreateProductDto) {
