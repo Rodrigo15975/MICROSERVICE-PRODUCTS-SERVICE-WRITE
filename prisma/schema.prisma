@@ -8,25 +8,26 @@ datasource db {
 }
 
 model Products {
-  id               Int               @id @default(autoincrement())
-  product          String            @unique
-  size             String[]
-  price            Decimal           @db.Decimal(10, 2)
-  gender           String
-  brand            String
-  description      String
-  quantity         Int
-  total_sold       Int?
-  is_new           Boolean
-  discount         Int?
-  categoryId       Int
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  coupon           Coupon[]
-  post             Post[]
+  id          Int      @id @default(autoincrement())
+  product     String   @unique
+  size        String[]
+  price       Decimal  @db.Decimal(10, 2)
+  gender      String
+  brand       String
+  description String
+  quantity    Int
+  is_new      Boolean
+  discount    Int?
+  categoryId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  coupon Coupon[]
+
   productInventory ProductInventory?
   productVariant   ProductVariant[]
-  category         Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category         Category           @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  total_sold       ProductTotalSould?
 
   @@index([categoryId])
   @@index([price])
@@ -35,6 +36,20 @@ model Products {
   @@index([size])
   @@index([brand])
   @@index([is_new])
+}
+
+model ProductTotalSould {
+  id         Int @id @default(autoincrement())
+  total_sold Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
+  productsId Int      @unique
+
+  @@index([total_sold])
+  @@map("products_total_sold")
 }
 
 model ProductVariant {
@@ -62,19 +77,6 @@ model ProductInventory {
   products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
 
   @@index([minStock])
-}
-
-model Post {
-  id         Int      @id @default(autoincrement())
-  comments   String
-  username   String
-  rating     Int
-  productsId Int
-  createdAt  DateTime @default(now())
-  updateAt   DateTime @updatedAt
-  products   Products @relation(fields: [productsId], references: [id], onDelete: Cascade)
-
-  @@index([username])
 }
 
 model Category {

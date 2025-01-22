@@ -24,20 +24,16 @@ export class ProductsService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.apiUrlMicroservicesFiles =
-      process.env.NODE_ENV === 'production'
-        ? this.configService.getOrThrow('API_MICROSERVICES_FILES_PRODUCTION')
-        : this.configService.getOrThrow('API_MICROSERVICES_FILES_DEV')
+    this.apiUrlMicroservicesFiles = this.configService.getOrThrow(
+      'API_MICROSERVICES_FILES',
+    )
   }
 
   async create(data: CreateProductDto) {
     const { products } = data
-
     await Bluebird.map(
       products,
       async (dataProducts, index) => {
-        // const { product } = dataProducts
-        // await this.verifyExistingProduct(product)
         this.logger.log('Processing product: ', index + 1)
         const newProduct = await this.createProductsOrUpdate(dataProducts)
         this.productServiceRead.createOrUpdate(newProduct, index + 1)
