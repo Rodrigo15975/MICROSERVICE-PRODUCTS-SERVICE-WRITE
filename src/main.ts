@@ -3,7 +3,6 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
 
-// Cargar variables de entorno
 import * as dotenv from 'dotenv'
 import { ValidationPipe } from '@nestjs/common'
 dotenv.config()
@@ -20,7 +19,6 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('MICROSERVICE-PRODUCTS', app, documentFactory)
 
-  // Crear el microservicio
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
     options: {

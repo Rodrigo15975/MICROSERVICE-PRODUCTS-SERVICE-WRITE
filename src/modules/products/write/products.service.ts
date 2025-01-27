@@ -65,7 +65,7 @@ export class ProductsService {
       productVariant,
     } = dataProduct
     const { minStock, stock } = productInventory
-
+    const SizeUniques = [...new Set(size)]
     return await this.prismaService.products.upsert({
       create: {
         brand,
@@ -82,7 +82,7 @@ export class ProductsService {
         },
         productVariant: {
           create: productVariant
-            .filter(({ url }) => url) // Solo incluye elementos que tengan `url` definido
+            .filter(({ url }) => url)
             .map(({ color, url, key_url }) => ({
               color,
               url,
@@ -96,7 +96,7 @@ export class ProductsService {
         price,
         product,
         quantity,
-        size,
+        size: SizeUniques,
       },
       update: {
         price,
@@ -118,7 +118,7 @@ export class ProductsService {
         is_new,
         discount,
         product,
-        size,
+        size: SizeUniques,
       },
       include: {
         category: true,
@@ -164,7 +164,10 @@ export class ProductsService {
   async createSize(id: number, newSizes: string[]) {
     try {
       const findProduct = await this.findOneProduct(id)
-      const updatedSizes = [...(findProduct?.size ?? []), ...newSizes]
+      const updatedSizes = [
+        ...(new Set(findProduct?.size) ?? []),
+        ...new Set(newSizes),
+      ]
 
       const updateProduct = await this.prismaService.products.update({
         where: {
@@ -234,6 +237,7 @@ export class ProductsService {
         productInventory: {
           update: {
             minStock,
+            stock: quantity && minStock && quantity <= minStock ? true : false,
           },
         },
         price,
@@ -247,6 +251,7 @@ export class ProductsService {
         id,
       },
     })
+
     this.productServiceRead.createOrUpdate(updateProduct)
     return HandledRpcException.ResponseSuccessfullyMessagePattern(
       'Product updated successfully',
@@ -254,6 +259,7 @@ export class ProductsService {
       ProductsService.name,
     )
   }
+  // private verifyStock() {}
 
   private async deleteUrl(key: string) {
     await lastValueFrom(
