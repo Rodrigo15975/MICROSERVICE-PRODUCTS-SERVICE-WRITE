@@ -13,6 +13,8 @@ import {
 import { ProductsServiceRead } from '../read/product.service'
 import { UpdateProductDto } from '../dto/update-product.dto'
 import { normalizeString } from 'src/modules/utils/normalizeString'
+import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq'
+import { configRabbit } from '../common/config-rabbit'
 
 @Injectable()
 export class ProductsService {
@@ -259,7 +261,17 @@ export class ProductsService {
       ProductsService.name,
     )
   }
-  // private verifyStock() {}
+
+  @RabbitSubscribe({
+    exchange: configRabbit.EXCHANGE_NAME_DECREMENTE_STOCK,
+    routingKey: configRabbit.QUEUE_NAME_DECREMENTE_STOCK,
+    queue: configRabbit.QUEUE_NAME_DECREMENTE_STOCK,
+  })
+  public decrementStockInventory(@RabbitPayload() data: any) {
+    console.log({
+      data,
+    })
+  }
 
   private async deleteUrl(key: string) {
     await lastValueFrom(
