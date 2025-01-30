@@ -1,8 +1,10 @@
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq'
 import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { PrismaModule } from 'src/prisma/prisma.module'
+import { configExchange, configQueue } from './common/config-rabbit'
 import { proxyName } from './common/proxyName'
 import { ProductsController } from './products.controller'
 import { ProductsServiceRead } from './read/product.service'
@@ -12,6 +14,14 @@ import { ProductsService } from './write/products.service'
   imports: [
     PrismaModule,
     HttpModule,
+    RabbitMQModule.forRootAsync(RabbitMQModule, {
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.getOrThrow('RABBITMQ_URL'),
+        exchanges: configExchange,
+        queues: configQueue,
+      }),
+      inject: [ConfigService],
+    }),
     ClientsModule.registerAsync([
       {
         name: proxyName.read,
