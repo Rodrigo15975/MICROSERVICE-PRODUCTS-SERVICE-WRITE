@@ -15,6 +15,7 @@ import { UpdateProductDto } from '../dto/update-product.dto'
 import { normalizeString } from 'src/modules/utils/normalizeString'
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq'
 import { configRabbit } from '../common/config-rabbit'
+import { OrdersClient } from '../dto/get-orders-decrement'
 
 @Injectable()
 export class ProductsService {
@@ -267,10 +268,13 @@ export class ProductsService {
     routingKey: configRabbit.QUEUE_NAME_DECREMENTE_STOCK,
     queue: configRabbit.QUEUE_NAME_DECREMENTE_STOCK,
   })
-  public decrementStockInventory(@RabbitPayload() data: any) {
-    console.log({
-      data,
-    })
+  public decrementStockInventory(@RabbitPayload() data: OrdersClient) {
+    const { dataFormat } = data
+    const dataDecrement = dataFormat.map((item) => ({
+      id: item.id,
+      quantity: item.quantity_buy,
+    }))
+    this.logger.debug('Decrement stock', dataDecrement)
   }
 
   private async deleteUrl(key: string) {
