@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
 
 import * as dotenv from 'dotenv'
-import { ValidationPipe } from '@nestjs/common'
+import { Logger, ValidationPipe } from '@nestjs/common'
 dotenv.config()
 
 async function bootstrap() {
@@ -39,7 +39,11 @@ async function bootstrap() {
   )
 
   await app.listen(port, () => {
-    console.log('listening on port ' + port)
+    if (process.env.NODE_ENV === 'development') {
+      Logger.verbose('listening on port ' + port, 'MODE:', process.env.NODE_ENV)
+      return
+    }
+    Logger.log('listening on port ' + port, 'MODE:', process.env.NODE_ENV)
   })
 }
 bootstrap()

@@ -11,6 +11,7 @@ class ProductUpdate {
   description: string
   id: number
   minStock: number
+  total_sold?: number
 }
 
 export class UpdateProductDto extends PartialType(ProductUpdate) {

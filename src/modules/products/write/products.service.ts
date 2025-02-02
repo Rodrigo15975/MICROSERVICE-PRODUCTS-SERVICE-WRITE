@@ -1,5 +1,10 @@
 import { HttpService } from '@nestjs/axios'
-import { HttpStatus, Injectable, Logger } from '@nestjs/common'
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as Bluebird from 'bluebird'
 import { lastValueFrom } from 'rxjs'
@@ -268,13 +273,66 @@ export class ProductsService {
     routingKey: configRabbit.QUEUE_NAME_DECREMENTE_STOCK,
     queue: configRabbit.QUEUE_NAME_DECREMENTE_STOCK,
   })
-  public decrementStockInventory(@RabbitPayload() data: OrdersClient) {
-    const { dataFormat } = data
-    const dataDecrement = dataFormat.map((item) => ({
-      id: item.id,
-      quantity: item.quantity_buy,
-    }))
-    this.logger.debug('Decrement stock', dataDecrement)
+  public async decrementStockInventory(@RabbitPayload() data: OrdersClient) {
+    try {
+      const { dataFormat } = data
+      await this.prismaService.$transaction(async () => {
+        for (const { id, quantity_buy } of dataFormat) {
+          this.logger.debug('Initial decremente stock... ', id)
+          const findProduct = await this.prismaService.products.findUnique({
+            where: {
+              id,
+            },
+            include: {
+              productInventory: true,
+            },
+          })
+          const productWithDecrement = await this.prismaService.products.update(
+            {
+              data: {
+                quantity: {
+                  decrement: quantity_buy,
+                },
+                total_sold: {
+                  upsert: {
+                    create: {
+                      total_sold: quantity_buy,
+                    },
+                    update: {
+                      total_sold: {
+                        increment: quantity_buy,
+                      },
+                    },
+                  },
+                },
+                productInventory: {
+                  update: {
+                    stock:
+                      findProduct &&
+                      findProduct.productInventory &&
+                      findProduct.productInventory.minStock <=
+                        findProduct.productInventory.minStock - quantity_buy
+                        ? true
+                        : false,
+                  },
+                },
+              },
+              where: {
+                id,
+              },
+              include: {
+                total_sold: true,
+              },
+            },
+          )
+          this.productServiceRead.createOrUpdate(productWithDecrement)
+        }
+      })
+      this.logger.debug('Stock decremented successfully')
+    } catch (error) {
+      this.logger.error('Error decrementing stock', error)
+      throw new InternalServerErrorException(error)
+    }
   }
 
   private async deleteUrl(key: string) {
