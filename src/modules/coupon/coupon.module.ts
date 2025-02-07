@@ -11,7 +11,10 @@ import { CouponReadService } from './read/coupon.read.service'
     PrismaModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath:
+        process.env.NODE_ENV === 'development'
+          ? '.env.development'
+          : '.env.production',
     }),
 
     ClientsModule.registerAsync([

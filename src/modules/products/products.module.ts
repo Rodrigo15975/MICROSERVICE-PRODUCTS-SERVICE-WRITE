@@ -34,7 +34,7 @@ import { ProductsService } from './write/products.service'
             define: {
               timestamps: true,
             },
-            retryDelay: 1000,
+            retryDelay: 5000,
             log: ['query', 'error'],
             retryAttempts: 5,
             autoResubscribe: true,

@@ -2,10 +2,12 @@ import { NestFactory } from '@nestjs/core'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
-
 import * as dotenv from 'dotenv'
 import { Logger, ValidationPipe } from '@nestjs/common'
-dotenv.config()
+
+dotenv.config({
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
+})
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
