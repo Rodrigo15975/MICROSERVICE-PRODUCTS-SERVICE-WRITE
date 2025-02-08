@@ -2,13 +2,19 @@ import { NestFactory } from '@nestjs/core'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
-import * as dotenv from 'dotenv'
+// import * as dotenvflow from 'dotenv-flow'
 import { Logger, ValidationPipe } from '@nestjs/common'
+// import * as dotenvFlow from 'dotenv-flow'
 
-dotenv.config({
-  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
-})
+// Carga las variables de entorno según NODE_ENV
+// dotenvFlow.config()
 
+// dotenvflow.config({
+//   path:
+//     process.env.NODE_ENV === 'production'
+//       ? '.env.production'
+//       : '.env.development',
+// })
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
